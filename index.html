@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>山姆对对碰</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- hiprint -->
+    <link href="hiprint/css/hiprint.css" rel="stylesheet">
+    <link href="hiprint/css/print-lock.css" rel="stylesheet">
+    <link href="hiprint/css/print-lock.css" media="print" rel="stylesheet">
+</head>
+<body>
+    <script src="howler.js"></script>
+    <!-- jQuery (hiprint 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <!-- 加载 hiprint 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <!-- polyfill.min.js解决浏览器兼容性问题v6.26.0-->
+    <script src="hiprint/polyfill.min.js"></script>
+    <!-- hiprint 核心js-->
+    <script src="hiprint/hiprint.bundle.js"></script>
+    <!-- 条形码生成组件-->
+    <script src="hiprint/plugins/JsBarcode.all.min.js"></script>
+    <!-- 二维码生成组件-->
+    <script src="hiprint/plugins/qrcode.js"></script>
+    <!-- 调用浏览器打印窗口helper类，可自行替换-->
+    <script src="hiprint/plugins/jquery.hiwprint.js"></script>
+    <script src="hiprint/plugins/socket.io.js"></script>
+    <script src="hiprint/content/bootstrap.min.js"></script>
+    <script>
+        // 定义 JSON 字符串变量
+        const jsonString = '{"panels":[{"index":0,"height":130,"width":76,"paperHeader":49.5,"paperFooter":368.5039370078741,"printElements":[{"options":{"left":4.5,"top":4.5,"height":349.5,"width":207,"field":"text","testData":"测试","fontSize":10.5,"fontWeight":"bold","lineHeight":13.5},"printElementType":{"type":"longText"}}],"paperNumberLeft":185,"paperNumberTop":346}]}';
+        hiprint.init();
+        hiprintTemplate = new hiprint.PrintTemplate({
+            template: JSON.parse(jsonString),
+            // settingContainer: '#templateDesignDiv'
+        });
+    </script>
+    <div class="container">
+        <div class="grid-container">
+            <div class="grid-item" id="cell-1"></div>
+            <div class="grid-item" id="cell-2"></div>
+            <div class="grid-item" id="cell-3"></div>
+            <div class="grid-item" id="cell-4"></div>
+            <div class="grid-item" id="cell-5"></div>
+            <div class="grid-item" id="cell-6"></div>
+            <div class="grid-item" id="cell-7"></div>
+            <div class="grid-item" id="cell-8"></div>
+            <div class="grid-item" id="cell-9"></div>
+        </div>
+        <div class="right-frame">
+            <!-- 购物车部分 -->
+            <div class="cart-container">
+                <div class="cart-items">
+                    <!-- 购物车内容会通过 JavaScript 动态添加 -->
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <div class="right-frame-cell button">
+                    <button class="circle-button button-3" onclick="handleMediumLuck()">欧中</button>
+                </div>
+                <div class="right-frame-cell button">
+                    <div class="counter-display">
+                        <div class="counter-label">欧气值</div>
+                        <div class="counter-value">0</div>
+                    </div>
+                </div>
+                <div class="right-frame-cell button">
+                    <button class="circle-button button-1" onclick="showModal()">开始</button>
+                </div>
+                <div class="right-frame-cell button">
+                    <button class="circle-button button-2" onclick="upLuck()">抽</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 在 body 标签内添加模态框 HTML -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()"></button>
+            <h1 id="combo">山姆对对碰（经典版）</h1>
+            <h2>✨ 恭喜欧皇 ✨</h2>
+            <h2>✨ 有请下一位欧皇！ ✨</h2>
+            <div class="modal-buttons">
+                <button class="modal-btn package-btn" onclick="showPackageModal()">套餐</button>
+                <button class="modal-btn confirm-btn" onclick="handleConfirm()">开始</button>
+                <button class="modal-btn" onclick="clearDesk()">清台</button>
+                <button class="modal-btn cart-btn" onclick="showCartModal()">购物车</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增清单模态框 -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content cart-modal">
+            <div class="cart-total">欧皇清单</div>
+            <div class="cart-list"></div>
+            <div class="modal-buttons">
+                <div class="modal-btn status-btn" onclick="reconnectWebSocket()">
+                    <span id="statusDot" class="dot"></span>
+                    <span id="statusText">未连接</span>
+                </div>
+                <button class="modal-btn print-btn" onclick="printCart()">打印</button>
+                <button class="modal-btn cancel-btn" onclick="closeCartModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+     <!-- 套餐选择模态框 -->
+    <div id="packageModal" class="modal">
+        <div class="modal-content package-modal">
+            <h2>选择套餐</h2>
+            <div class="package-options">
+                <div class="package-option">
+                    <input type="radio" id="classic-lite" name="package" value="classic-lite">
+                    <label for="classic-lite">经典体验版 - 山姆经典好吃零食</label>
+                </div>
+                <div class="package-option">
+                    <input type="radio" id="deluxe-lite" name="package" value="deluxe-lite">
+                    <label for="deluxe-lite">豪华体验版 - 山姆豪华零食集合</label>
+                </div>
+                <div class="package-option">
+                    <input type="radio" id="classic" name="package" value="classic">
+                    <label for="classic">经典版 - 山姆经典好吃零食</label>
+                </div>
+                <div class="package-option">
+                    <input type="radio" id="deluxe" name="package" value="deluxe">
+                    <label for="deluxe">豪华版 - 山姆豪华零食集合</label>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm-btn" onclick="handlePackageSelect()">确定</button>
+                <button class="modal-btn cancel-btn" onclick="closePackageModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>

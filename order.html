@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>订单页面</title>
+    <!-- jQuery (hiprint 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <!-- 加载 hiprint 的所有 JavaScript 插件 -->
+    <script src="hiprint/polyfill.min.js"></script>
+    <script src="hiprint/hiprint.bundle.js"></script>
+    <script src="hiprint/plugins/JsBarcode.all.min.js"></script>
+    <script src="hiprint/plugins/qrcode.js"></script>
+    <script src="hiprint/plugins/jquery.hiwprint.js"></script>
+    <script src="hiprint/plugins/socket.io.js"></script>
+    <script src="hiprint/content/bootstrap.min.js"></script>
+        <script>
+            // 定义 JSON 字符串变量
+            const jsonString = '{"panels":[{"index":0,"height":130,"width":76,"paperHeader":49.5,"paperFooter":368.5039370078741,"printElements":[{"options":{"left":4.5,"top":4.5,"height":349.5,"width":207,"field":"text","testData":"测试","fontSize":11.25,"fontWeight":"bold","lineHeight":13.5},"printElementType":{"type":"longText"}}],"paperNumberLeft":185,"paperNumberTop":346}]}';
+            hiprint.init();
+            hiprintTemplate = new hiprint.PrintTemplate({
+                template: JSON.parse(jsonString),
+            });
+
+            hiprintTemplate.printByHtml($('#printIframeEMS').html());
+        </script>
+        <div id="printIframeEMS">
+            <span class="token operator"><</span><span class="token operator">!</span>-- 打印面单EMS--<span class="token operator">></span>
+    <span class="token operator"><</span>div <span class="token assign-left variable">id</span><span class="token operator">=</span><span class="token string">"printIframeEMS"</span> <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"padding: 0 ; margin: 0 ;"</span><span class="token operator">></span>
+    <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin:0px auto 0px;page-break-after:always"</span> v-for<span class="token operator">=</span><span class="token string">"item, index in dataEMS"</span> :key<span class="token operator">=</span><span class="token string">"index"</span><span class="token operator">></span>
+        <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin-left:5px ;padding: 0 50px;"</span><span class="token operator">></span>
+        <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"height: 70px;border: 1px dotted #000;font-size: 12px !important;overflow: hidden;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 100%;height: 100%;float: left;text-align: center;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"float: right;"</span><span class="token operator">></span>
+                <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size: 16px;margin-top:1px;text-align: right;"</span><span class="token operator">></span>国际快递<span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">class</span><span class="token operator">=</span><span class="token string">"three"</span> <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size: 14px;margin:1px 0;margin-top: 40px; text-align: center !important;"</span><span class="token operator">></span>
+                <span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.bigPen <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"height: 95px;border: 1px dotted #000;font-size: 12px !important;overflow: hidden;border-top:none;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 10%;height: 100%;float: left;border-right: 1px dotted #000;padding:5px 0 0 5px;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div<span class="token operator">></span>
+                收件：
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size:12px;text-align:center;display:block;padding-top: 0px;box-sizing: border-box;float: left; width: 88%;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"padding-left:5px;box-sizing:border-box;text-align: left;"</span><span class="token operator">></span>
+                收件地址:<span class="token operator"><</span>span<span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.consigneeAddress <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/span<span class="token operator">></span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"padding-left:5px;box-sizing:border-box;text-align: left;"</span><span class="token operator">></span>收件电话:<span class="token operator"><</span>span
+                <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin-right:3px"</span><span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.consigneePhone <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/span<span class="token operator">></span><span class="token operator"><</span>br<span class="token operator">></span>收件人:<span class="token operator"><</span>span<span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.consigneeName <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/span<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"height: 65px;border: 1px dotted #000;font-size: 12px !important;overflow: hidden;border-top:none;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 10%;height: 100%;float: left;border-right: 1px dotted #000;padding:5px 0 0 5px;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div<span class="token operator">></span>
+                寄件：<span class="token operator"><</span>span<span class="token operator">></span><span class="token operator"><</span>/span<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size:12px;text-align:center;display:block;padding-top: 0px;box-sizing: border-box;float: left; width: 88%;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"padding-left:5px;box-sizing:border-box;text-align: left;"</span><span class="token operator">></span>寄件始发地:<span class="token operator"><</span>span<span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.senderAddress
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/span<span class="token operator">></span> <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"padding-left:5px;box-sizing:border-box;text-align: left;"</span><span class="token operator">></span>寄件人电话:<span class="token operator"><</span>span<span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.senderTelephone
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/span<span class="token operator">></span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"height: 80px;border: 1px dotted #000;font-size: 12px !important;overflow: hidden;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 100%;height: 100%;float: left;text-align: center;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size: 22px;margin-top:1px;"</span><span class="token operator">></span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size: 15px;"</span><span class="token operator">></span>
+                <span class="token operator"><</span>div<span class="token operator">></span><span class="token operator"><</span>img :src<span class="token operator">=</span><span class="token string">"item.logisticsImg"</span> <span class="token assign-left variable">alt</span><span class="token operator">=</span><span class="token string">""</span> <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"max-width: 90%;height: 50px;"</span><span class="token operator">></span><span class="token operator"><</span>/div<span class="token operator">></span>
+                <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"letter-spacing:5px"</span><span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.logisticsNo <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"height: 100px;border: 1px dotted #000;border-top:none;font-size: 12px !important;overflow: hidden;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 55%;height: 100%;float: left;border-right: 1px dotted #000;padding-right: 0;margin-left: 0;padding:0;box-sizing:border-box;"</span><span class="token operator">></span>
+
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"line-height:13px; margin-bottom: 0; width: 100%;font-size:10px"</span><span class="token operator">></span>
+                快件送达收件人地址,经收件人或收件人<span class="token punctuation">(</span>寄件人<span class="token punctuation">)</span>允许的代收人签字,视为送达,您的签字代表您已签收此包裹,并已确认商品信息无误,包装完好,没有划痕,破损等方面质量问题<span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">class</span><span class="token operator">=</span><span class="token string">"time"</span> <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"font-size: 12px;"</span><span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.createTime <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 45%;float: left;height: 100%;padding:5px 0 0 5px;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin-bottom: 0px;font-size:10px"</span><span class="token operator">></span>
+                收件人/代收人：<span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">" margin-bottom: 0px;font-size:10px;white-space: nowrap;"</span><span class="token operator">></span>
+                签收时间：<span class="token operator">&</span>emsp<span class="token punctuation">;</span><span class="token operator">&</span>emsp<span class="token punctuation">;</span>年<span class="token operator">&</span>emsp<span class="token punctuation">;</span><span class="token operator">&</span>emsp<span class="token punctuation">;</span>月<span class="token operator">&</span>emsp<span class="token punctuation">;</span><span class="token operator">&</span>emsp<span class="token punctuation">;</span>日<span class="token operator">&</span>emsp<span class="token punctuation">;</span><span class="token operator">&</span>emsp<span class="token punctuation">;</span>时<span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin-top: 0;font-size:10px"</span><span class="token operator">></span>
+
+                快件送达收货人地址，经收件人或收件人允许的代收人签字视为送达<span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>div
+            <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"height: 60px;border: 1px dotted #000;font-size: 12px !important;overflow: hidden;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"width: 100%;height: 100%;float: left;text-align: center;box-sizing:border-box;"</span><span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin-top:0px;text-align: left;"</span><span class="token operator">></span>内件描述: <span class="token operator"><</span>span<span class="token operator">></span>/Description of Contents<span class="token operator"><</span>/span<span class="token operator">></span><span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>div <span class="token assign-left variable">style</span><span class="token operator">=</span><span class="token string">"margin-top:0px;text-align: left;"</span><span class="token operator">></span>
+                <span class="token operator"><</span>span<span class="token operator">></span><span class="token punctuation">{<!-- --></span><span class="token punctuation">{<!-- --></span> item.commodityDescription <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator"><</span>/span<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+            <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+        <span class="token operator"><</span>/div<span class="token operator">></span>
+    <span class="token operator"><</span>/div<span class="token operator">></span>
+    <span class="token operator"><</span><span class="token operator">!</span>-- <span class="token operator"><</span>/div<span class="token operator">></span> --<span class="token operator">></span>
+
+<span class="token operator"><</span>/div<span class="token operator">></span>
+</div>
+</body>
+</html>
