@@ -96,9 +96,10 @@ function printCart() {
     
     const printContent = getPrintContent();
     console.log(printContent);
-
+    // 获取套餐名字
+    let combo = document.getElementById('combo').textContent;
     const cartItems = getAllItems();
-    wsClient.ws.send(JSON.stringify({ action: 'saveToFeishu', content: cartItems }));
+    wsClient.ws.send(JSON.stringify({ action: 'saveToFeishu', content: cartItems, combo: combo }));
     wsClient.ws.send(JSON.stringify({ action: 'doPrint', content: printContent }));
     // console.log(hiprintTemplate.getPrinterList());
     // hiprintTemplate.print2({ text: printContent}, { printer:'HPRT N31C',title:'欧皇的购物车' });

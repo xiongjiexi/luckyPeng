@@ -31,7 +31,7 @@ wss.on('connection', (ws) => {
         try {
             const data = JSON.parse(message);
             if (data.action === 'saveToFeishu') {
-                saveToFeishuTable(data.content);
+                saveToFeishuTable(data.content, data.combo);
             }
         } catch (error) {
             console.error('处理消息时出错:', error);
@@ -59,7 +59,7 @@ function logClientConnection(ws, action) {
 
 
 // 调用飞书 API 将数据存入多维表格
-function saveToFeishuTable(info) {
+function saveToFeishuTable(info, combo) {
     const { totalPrice, totalCount } = info.reduce((acc, item) => {
         acc.totalPrice += item.price * item.quantity;
         acc.totalCount += item.quantity;
@@ -80,7 +80,8 @@ function saveToFeishuTable(info) {
                 fields: {
                     "info": JSON.stringify(info),
                     "total": totalPrice,
-                    "count": totalCount
+                    "count": totalCount,
+                    "combo": combo
                 },
             },
         }
@@ -96,5 +97,40 @@ function saveToFeishuTable(info) {
 }
 
 
+// 引入 express 并创建应用实例
+const express = require('express');
+const app = express();
+
+// 配置中间件解析 JSON
+app.use(express.json());
+
+// 启动服务器
+const port = 3000;
+app.listen(port, () => {
+    console.log(`服务器运行在 http://localhost:${port}`);
+});
+
+
+// 定义接收数据的接口
+app.post('/api/data', (req, res) => {
+    try {
+        // 获取请求体中的JSON数据
+        const data = req.body;
+        
+        // 打印接收到的数据
+        console.log('接收到的数据:', JSON.stringify(data, null, 2));
+
+        // 返回成功响应
+        res.status(200).json({
+            message: '数据接收成功'
+        });
+    } catch (error) {
+        // 发生错误时返回错误信息
+        console.error('处理数据时出错:', error);
+        res.status(500).json({
+            message: '处理数据时发生错误'
+        });
+    }
+});
 
 
