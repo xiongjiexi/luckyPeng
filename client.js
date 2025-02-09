@@ -17,7 +17,8 @@ class WebSocketClient {
 
     connect() {
         this.setStatus('connecting');
-        this.ws = new WebSocket(this.url);
+        // 通过URL参数传递客户端类型
+        this.ws = new WebSocket(this.url + '?clientType=' + clientType);
 
         this.ws.onopen = () => {
             console.log('已连接到服务器');
@@ -31,8 +32,12 @@ class WebSocketClient {
             if (message.action === 'doPrint') {
                 const printContent = message.content;
                 doPrint(printContent);
+            } else if (message.action === 'printReturnOrder') { 
+                const data = message.content;
+                printReturnOrder(data);
             }
         };
+
 
         this.ws.onclose = () => {
             console.log('连接已断开');
@@ -125,4 +130,88 @@ function getPrintContent() {
     printContent += `总计：${totalCount}件`; //${total.toFixed(2)}元，
     
     return printContent;
+}
+
+function printreturnorderPage(currentRow) {
+    // 直接使用传入的currentRow而不是重新查询DOM
+    if (!currentRow) {
+        alert('未找到订单数据');
+        return;
+    }
+
+    // 从传入的行中获取所有数据
+    const cells = currentRow.getElementsByTagName('td');
+    const orderData = {
+        order_number: cells[0].textContent.trim(),
+        product_name: cells[1].textContent.trim(),
+        product_specification: cells[2].textContent.trim(),
+        amount: cells[3].textContent.trim(),
+        source: cells[4].textContent.trim(),
+        nickname: cells[5].textContent.trim(),
+        name: cells[6].textContent.trim(),
+        order_time: cells[7].textContent.trim(),
+        status: cells[8].textContent.trim()
+    };
+
+    printReturnOrderByOrderNumber(orderData.order_number);
+    doPrintReturnOrder(stringifyReturnOrder(orderData));
+}
+
+
+
+// 拼接退单信息
+function stringifyReturnOrder(order) {
+    let printContent = "退单信息\n";
+    printContent += "------------------------\n";
+    printContent += `订单编号: ${order.order_number}\n`;
+    printContent += `商品名称: ${order.product_name}\n`;
+    printContent += `商品规格: ${order.product_specification}\n`;
+    printContent += `金额: ${order.amount}\n`;
+    printContent += `来源: ${order.source}\n`;
+    printContent += `用户昵称: ${order.nickname}\n`;
+    printContent += `用户姓名: ${order.name}\n`;
+    printContent += `下单时间: ${order.order_time}\n`;
+    printContent += `状态: ${order.status}\n`;
+    printContent += "------------------------\n";
+    return printContent;
+}
+
+
+
+function printReturnOrder(data) {
+    const contentArray = [];
+
+    data.data.rows.forEach(order => {
+        printReturnOrderByOrderNumber(order.order_number);
+        contentArray.push(stringifyReturnOrder(order));
+    });
+
+    console.log('1秒后打印退单');
+    function printNext(index) {
+        if (index >= contentArray.length) return;
+        
+        doPrintReturnOrder(contentArray[index]);
+        // 等待2秒后打印下一个
+        setTimeout(() => printNext(index + 1), 2000);
+    }
+
+    // 开始打印第一个
+    printNext(0);
+}
+
+
+function doPrintReturnOrder(printContent) {
+    console.log('打印退单', printContent);
+    hiprintTemplate.print2({ text: printContent}, { printer:'HPRT N31C',title:'退单' });
+}
+
+
+// 调用/api/return_order/print，且将ordernumber传入
+function printReturnOrderByOrderNumber(orderNumber) {
+    fetch(`/api/return_order/print?order_number=${orderNumber}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('退单数据:', data);
+        })
+        .catch(error => console.error('获取退单数据失败:', error));
 }

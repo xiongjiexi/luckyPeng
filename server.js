@@ -1,5 +1,8 @@
 const WebSocket = require('ws');
+const url = require('url');
 const lark = require('@larksuiteoapi/node-sdk');
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const client = new lark.Client({
 	appId: 'cli_a70d5789f5fad00e',
@@ -12,20 +15,36 @@ const wss = new WebSocket.Server({ port: 8080 });
 
 // 存储所有连接的客户端
 const clients = new Set();
+// 分类存储客户端，管理页面客户端分开存储
+const clients4Manage = new Set();
+// 游戏页面客户端分开存储
+const clients4Game = new Set();
+
 
 // 处理新的连接
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, request) => {
     logClientConnection(ws, 'connect');
-    clients.add(ws);
+
+    // 通过URL参数传递客户端类型
+    console.log("request.url", request.url);
+    const queryParams = url.parse(request.url, true).query;
+    const clientType = queryParams.clientType;
+    console.log("clientType", clientType);
+
+    if (clientType === 'manage') {
+        clients4Manage.add(ws);
+    } else if (clientType === 'game') {
+        clients4Game.add(ws);
+    }
+
+    console.log("clients4Manage count", clients4Manage.size);
+    console.log("clients4Game count", clients4Game.size);
+
 
     // 处理接收到的消息
     ws.on('message', (message) => {
-        // 向除发送者外的所有客户端广播消息
-        clients.forEach((client) => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(message.toString());
-            }
-        });
+        // 向客户端广播消息
+        sendMessage(message, clientType);
 
         // 假设消息是 JSON 格式并包含要发送到飞书的数据
         try {
@@ -41,9 +60,23 @@ wss.on('connection', (ws) => {
     // 处理客户端断开连接
     ws.on('close', () => {
         logClientConnection(ws, 'disconnect');
-        clients.delete(ws);
+        clients4Manage.delete(ws);
+        clients4Game.delete(ws);
     });
 });
+
+
+function sendMessage(message, clientType) {
+    if (clientType === 'manage') {
+        console.log("no support sendMessage to manage");
+    } else if (clientType === 'game') {
+        clients4Manage.forEach((client) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(message.toString());
+            }
+        });
+    }
+}
 
 console.log('WebSocket 服务器运行在端口 8080'); 
 
@@ -96,41 +129,114 @@ function saveToFeishuTable(info, combo) {
     });
 }
 
+// 定时获取退单数据，然后调用ws，将退单数据发送到前端，每10秒获取一次
+setInterval(() => {
+    getReturnOrder4Cancel();
+}, 1000 * 10);
 
-// 引入 express 并创建应用实例
-const express = require('express');
+
+async function getReturnOrder4Cancel() {
+    console.log('定时获取退单数据');
+    const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders_cancel', {
+            method: 'GET',
+            headers: {
+
+                'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'),
+                'endpoint-type': 'draft'
+            }
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("有%d条退单数据", data.data.rows.length);
+
+    // 将data发送到ws
+    clients4Manage.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ action: 'printReturnOrder', content: data }));
+        }
+    });
+}
+
+
 const app = express();
 
-// 配置中间件解析 JSON
-app.use(express.json());
+// 添加 CORS 中间件
+
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // 允许所有来源（生产环境应限制为具体域名）
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+  });
+
+// 静态文件服务（前端页面）
+app.use(express.static('./'));
+
 
 // 启动服务器
-const port = 3000;
-app.listen(port, () => {
-    console.log(`服务器运行在 http://localhost:${port}`);
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
 });
 
+const PUBLIC_KEY = '01VDGUE0';
+const PRIVATE_KEY = 'a406f325-195f-459d-8de9-e52239cbfca7';
 
-// 定义接收数据的接口
-app.post('/api/data', (req, res) => {
+// 获取订单数据
+app.get('/api/return_orders_page', async (req, res) => {
     try {
-        // 获取请求体中的JSON数据
-        const data = req.body;
-        
-        // 打印接收到的数据
-        console.log('接收到的数据:', JSON.stringify(data, null, 2));
 
-        // 返回成功响应
-        res.status(200).json({
-            message: '数据接收成功'
+        const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders_page', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'),
+                'endpoint-type': 'draft'
+            }
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        res.json(data);
     } catch (error) {
-        // 发生错误时返回错误信息
-        console.error('处理数据时出错:', error);
-        res.status(500).json({
-            message: '处理数据时发生错误'
-        });
+        console.error('获取订单数据失败:', error);
+        res.status(500).json({ error: '获取订单数据失败' });
     }
 });
 
 
+app.get('/api/return_order/print', async (req, res) => {   
+    try {
+        // 接口传参order_number
+        const order_number = req.query.order_number;
+        console.log('修改退单状态为Print', order_number);
+        
+        const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_order/print', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'),
+                'endpoint-type': 'draft',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                order_number: order_number
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('获取订单数据失败:', error);
+        res.status(500).json({ error: '获取订单数据失败' });
+    }
+});
