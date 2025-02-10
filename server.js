@@ -3,6 +3,9 @@ const url = require('url');
 const lark = require('@larksuiteoapi/node-sdk');
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const mysql = require('mysql2/promise');
+const fs = require('fs');
+const path = require('path');
 
 const client = new lark.Client({
 	appId: 'cli_a70d5789f5fad00e',
@@ -71,7 +74,7 @@ function sendMessage(message, clientType) {
         console.log("no support sendMessage to manage");
     } else if (clientType === 'game') {
         clients4Manage.forEach((client) => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
+            if (client.readyState === WebSocket.OPEN) {
                 client.send(message.toString());
             }
         });
@@ -132,15 +135,13 @@ function saveToFeishuTable(info, combo) {
 // 定时获取退单数据，然后调用ws，将退单数据发送到前端，每10秒获取一次
 setInterval(() => {
     getReturnOrder4Cancel();
-}, 1000 * 10);
+}, 1500 * 10);
 
 
 async function getReturnOrder4Cancel() {
-    console.log('定时获取退单数据');
     const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders_cancel', {
             method: 'GET',
             headers: {
-
                 'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'),
                 'endpoint-type': 'draft'
             }
@@ -151,7 +152,7 @@ async function getReturnOrder4Cancel() {
     }
 
     const data = await response.json();
-    console.log("有%d条退单数据", data.data.rows.length);
+    console.log("定时获取退单数据, 有%d条退单数据", data.data.rows.length);
 
     // 将data发送到ws
     clients4Manage.forEach((client) => {
@@ -240,3 +241,66 @@ app.get('/api/return_order/print', async (req, res) => {
         res.status(500).json({ error: '获取订单数据失败' });
     }
 });
+
+// 创建数据库连接配置
+const dbConfig = {
+  host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+  port: 4000,
+  user: '3dK6oXsgVJ4oPyt.root',
+  password: 'SWUTVxvVKRkql5Jb',
+  database: 'ddp',
+  ssl: {
+    ca: fs.readFileSync(path.join(__dirname, 'isrgrootx1.pem')),
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true
+  }
+};
+
+// 创建数据库连接池
+const pool = mysql.createPool(dbConfig);
+
+// 添加新的API端点用于获取MySQL数据
+app.get('/api/combo', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.query('SELECT * FROM combo');
+        connection.release();
+        // 接口返回rows
+        res.json(rows);
+    } catch (error) {
+        console.error('MySQL查询失败:', error);
+        res.status(500).json({ error: '获取数据失败' });
+    }
+});
+
+// 添加新的API端点用于获取combo_detail表数据，返回json
+app.get('/api/combo_detail', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.query('SELECT * FROM combo_detail where combo_id = ?', [req.query.combo_id]);
+        connection.release();
+        res.json(rows);
+    } catch (error) {
+        console.error('MySQL查询失败:', error);
+        res.status(500).json({ error: '获取数据失败' });
+    }
+});
+
+// 添加新的API端点用于修改combo_detail表数据
+app.put('/api/combo_detail', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        // 删除combo_detail表数据
+        const [rows1] = await connection.query('DELETE FROM combo_detail WHERE combo_id = ?', [req.body.combo_id]);
+        connection.release();
+
+        // 插入combo_detail表数据
+        const [rows2] = await connection.query('INSERT INTO combo_detail (combo_id, name, price, weight) VALUES (?, ?, ?, ?)', [req.body.combo_id, req.body.name, req.body.price, req.body.weight]);
+        connection.release();
+        res.json(rows2);
+    } catch (error) {
+        console.error('MySQL查询失败:', error);
+        res.status(500).json({ error: '获取数据失败' });
+    }
+});
+

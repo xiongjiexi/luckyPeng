@@ -9,84 +9,68 @@ const colors = {
     6: '#A6DFFF' // 蓝色
 };
 
-// 经典版
 const products1 = [
-    { name: '法国进口巧克力饼干', price: 0.449, weight: 5, curr_weight: 1 },
-    { name: '智利无核西梅', price: 0.514, weight: 5, curr_weight: 1 },
-    { name: 'MM薯脆薄饼干(黑松露味&蒜味)', price: 0.446, weight: 5, curr_weight: 1 },
-    { name: 'MM黑金芝士薄脆饼干', price: 0.570, weight: 5, curr_weight: 1 },
-    { name: 'MM无糖黑芝麻酥', price: 0.667, weight: 5, curr_weight: 1 },
-    { name: 'MM海盐苏打饼干', price: 0.667, weight: 5, curr_weight: 1 },
-    { name: '嘉顿幸运饼干', price: 0.857, weight: 5, curr_weight: 1 },
-    { name: 'MM芝士夹心饼干', price: 0.893, weight: 5, curr_weight: 1 },
-    { name: '溜溜梅皇梅', price: 0.714, weight: 5, curr_weight: 1 },
-    { name: 'Bouchard什锦巧克力', price: 0.785, weight: 5, curr_weight: 1 },
-    { name: 'FFIT8燕麦蛋白曲奇', price: 1.093, weight: 1, curr_weight: 1 },
-    { name: 'Tafe黑松露火腿苏打饼干', price: 1.000, weight: 1, curr_weight: 1 },
-    { name: 'Tafe千层酥', price: 1.029, weight: 1, curr_weight: 1 },
-    { name: '奥赛山楂棒', price: 1.064, weight: 1, curr_weight: 1 },
-    { name: '德芙茶萃黑巧', price: 1.250, weight: 1, curr_weight: 1 },
-    { name: '彩虹酸粉糖', price: 1.304, weight: 1, curr_weight: 1 },
-    { name: 'MM脆米黑巧', price: 1.429, weight: 1, curr_weight: 1 },
-    { name: '彩虹熊猫软糖', price: 1.458, weight: 1, curr_weight: 1 },
+    { name: 'MM薯脆薄饼干(黑松露味&蒜味)', price: 0.446, weight: 3},
+    { name: 'Stmichel法国进口巧克力饼干', price: 0.449, weight: 3},
+    { name: 'MM黑金芝士薄脆饼干', price: 0.568, weight: 3},
+    { name: 'MM海盐苏打饼干', price: 0.667, weight: 3},
+    { name: 'MM牛肉馅酥脆饼干', price: 0.750, weight: 3},
+    { name: '北田谷物坚果香脆卷鹰嘴豆蛋皇口味', price: 0.882, weight: 3},
+    { name: 'MM芝士夹心饼干', price: 0.893, weight: 3},
+    { name: 'Tafe黑松露火腿苏打饼干', price: 1.000, weight: 2},
+    { name: 'Tafe千层酥', price: 1.029, weight: 2},
+    { name: '徐福记芥末虾饼', price: 1.042, weight: 2},
+    { name: 'Daelmans迷你焦糖味夹心华夫饼干', price: 1.067, weight: 2},
+    { name: 'FFIT8燕麦蛋白曲奇', price: 1.094, weight: 2},
+    { name: '雀巢运动力量饼干', price: 1.176, weight: 1},
+    { name: 'pickup巧克力夹心饼干', price: 1.400, weight: 1},
+    { name: 'MM鲜牛乳饼干', price: 1.667, weight: 1},
 ];
 
-// 豪华版
 const products2 = [
-    { name: 'MM黄油华夫饼', price: 1.563, weight: 5, curr_weight: 1 },
-    { name: '蛋皇鹌鹑蛋', price: 1.628, weight: 5, curr_weight: 1 },
-    { name: 'HRYOUP苹果干', price: 1.629, weight: 5, curr_weight: 1 },
-    { name: '吉香居萝卜干', price: 1.667, weight: 5, curr_weight: 1 },
-    { name: 'MM鲜牛乳饼干', price: 1.667, weight: 5, curr_weight: 1 },
-    { name: '甘源黑金蒜香菜味翡翠豆', price: 1.727, weight: 5, curr_weight: 1 },
-    { name: 'Tafe豆乳夹心面包', price: 2.000, weight: 5, curr_weight: 1 },
-    { name: 'MM岩烧芝士华夫饼', price: 2.000, weight: 5, curr_weight: 1 },
-    { name: 'MM有机果汁蓝莓干', price: 2.000, weight: 5, curr_weight: 1 },
-    { name: '吉百利欢聚装巧克力', price: 2.272, weight: 5, curr_weight: 1 },
-    { name: 'MM三重芝士半蒸蛋糕', price: 2.174, weight: 5, curr_weight: 1 },
-    { name: '枫糖浆味核桃仁', price: 2.500, weight: 1, curr_weight: 1 },
-    { name: '大马碧富薄荷咸柠檬糖', price: 2.500, weight: 1, curr_weight: 1 },
-    { name: 'MM黑芝麻谷物粉', price: 2.500, weight: 1, curr_weight: 1 },
-    { name: '都乐一颗小橘干', price: 2.632, weight: 1, curr_weight: 1 },
-    { name: 'MM太妃巧克力', price: 2.632, weight: 1, curr_weight: 1 },
-    { name: '口福莱巧克力', price: 2.778, weight: 1, curr_weight: 1 },
-    { name: '有友脱骨鸭掌', price: 2.692, weight: 1, curr_weight: 1 },
+    { name: 'Bouchard什锦巧克力', price: 0.786, weight: 3},
+    { name: '德芙茶萃黑巧', price: 1.250, weight: 3},
+    { name: 'MM脆米黑巧', price: 1.429, weight: 3},
+    { name: '雀巢半糖威化', price: 2.051, weight: 2},
+    { name: '吉百利欢聚装巧克力', price: 2.273, weight: 2},
+    { name: 'MM太妃巧克力', price: 2.632, weight: 2},
+    { name: '口福莱巧克力', price: 2.778, weight: 1},
+    { name: '费列罗榛果威化巧克力', price: 2.857, weight: 1},
+    { name: '奇巧熊造型巧克力', price: 3.214, weight: 1}
 ];
 
-// 经典体验版
 const products3 = [
-    { name: '法国进口巧克力饼干', price: 0.449, weight: 5, curr_weight: 1 },
-    { name: 'MM薯脆薄饼干(黑松露味&蒜味)', price: 0.446, weight: 5, curr_weight: 1 },
-    { name: '智利无核西梅', price: 0.514, weight: 5, curr_weight: 1 },
-    { name: 'MM黑金芝士薄脆饼干', price: 0.570, weight: 5, curr_weight: 1 },
-    { name: 'MM无糖黑芝麻酥', price: 0.667, weight: 5, curr_weight: 1 },
-    { name: 'MM海盐苏打饼干', price: 0.667, weight: 5, curr_weight: 1 },
-    { name: '嘉顿幸运饼干', price: 0.857, weight: 2, curr_weight: 1 },
-    { name: 'MM芝士夹心饼干', price: 0.893, weight: 2, curr_weight: 1 },
-    { name: 'Bouchard什锦巧克力', price: 0.785, weight: 2, curr_weight: 1 },
-    { name: '溜溜梅皇梅', price: 0.714, weight: 2, curr_weight: 1 },
-    { name: 'Tafe黑松露火腿苏打饼干', price: 1.000, weight: 1, curr_weight: 1 },
-    { name: 'Tafe千层酥', price: 1.029, weight: 1, curr_weight: 1 },
+    { name: 'Cal-lite高蛋白元气脆皮肠', price: 1.340, weight: 3 },
+    { name: '蛋皇鹌鹑蛋', price: 1.628, weight: 3 },
+    { name: '有友脱骨鸭掌', price: 2.692, weight: 3 },
+    { name: 'MM卤汁牛腱', price: 2.857, weight: 3 },
+    { name: '棒棒娃麻辣牛肉', price: 3.200, weight: 2 },
+    { name: '亚玛亚柠檬香茅酸辣掌中宝', price: 3.208, weight: 2 },
+    { name: '獐子岛软烤虾夷扇贝', price: 3.350, weight: 2 },
+    { name: '小胡鸭柠檬酸辣去骨凤爪', price: 3.591, weight: 2 },
+    { name: 'MM猪肉脯', price: 4.045, weight: 1 },
+    { name: 'MM香辣鸭舌', price: 4.667, weight: 1 },
+    { name: 'MM风干牛肉', price: 4.807, weight: 1 }
 ];
 
-// 豪华体验版
 const products4 = [
-    { name: 'MM黄油华夫饼', price: 1.563, weight: 5, curr_weight: 1 },
-    { name: '德芙茶萃黑巧', price: 1.250, weight: 5, curr_weight: 1 },
-    { name: '彩虹酸粉糖', price: 1.304, weight: 5, curr_weight: 1 },
-    { name: 'MM脆米黑巧', price: 1.429, weight: 5, curr_weight: 1 },
-    { name: '蛋皇鹌鹑蛋', price: 1.628, weight: 5, curr_weight: 1 },
-    { name: 'HRYOUP苹果干', price: 1.629, weight: 5, curr_weight: 1 },
-    { name: '甘源黑金蒜香菜味翡翠豆', price: 1.727, weight: 5, curr_weight: 1 },
-    { name: 'MM鲜牛乳饼干', price: 1.667, weight: 5, curr_weight: 1 },
-    { name: 'Tafe豆乳夹心面包', price: 2.000, weight: 2, curr_weight: 1 },
-    { name: 'MM岩烧芝士华夫饼', price: 2.000, weight: 2, curr_weight: 1 },
-    { name: 'MM有机果汁蓝莓干', price: 2.000, weight: 2, curr_weight: 1 },
-    { name: '吉百利欢聚装巧克力', price: 2.272, weight: 1, curr_weight: 1 },
+    { name: 'MM冻干芒果腰果仁', price: 0.833, weight: 3 },
+    { name: 'DGI低GI五黑坚果脆', price: 0.930, weight: 3 },
+    { name: 'HRYOUP苹果干', price: 1.629, weight: 3 },
+    { name: 'MM有机果汁蓝莓干', price: 2.000, weight: 2 },
+    { name: '都乐一颗小橘干', price: 2.632, weight: 2 },
+    { name: 'ONICE去衣扁桃仁', price: 2.670, weight: 2 },
+    { name: 'ONICE臻香脆混合果仁海盐味', price: 3.000, weight: 2 },
+    { name: 'MM每日坚果', price: 3.333, weight: 2 },
+    { name: '杭派碧根果仁', price: 4.000, weight: 1 },
+    { name: '冻干益生菌凤梨莓莓', price: 4.286, weight: 1 },
+    { name: 'HRYOUP秋月梨干', price: 4.286, weight: 1 },
+    { name: '意式火腿风味坚果仁', price: 4.500, weight: 1 },
+    { name: 'MM芥末夏威夷果', price: 5.000, weight: 1 }
 ];
 
 // 默认使用豪华版
-let products = copyArrayWithMap(products2);
+let products = copyArrayWithMap(products1);
 
 // 使用map拷贝数组对象
 function copyArrayWithMap(array) {
@@ -106,7 +90,6 @@ const sd = {
     bingo: new Howl({src: ['bingo.mp3']}),
     luck:  new Howl({src: ['luck.mp3']}),
     start: new Howl({src: ['start.mp3']})
-    
 }
 
 // 定义购物车变量
@@ -191,7 +174,6 @@ function selectProductByWeight() {
             return product;
         }
     }
-    
     // 保险起见，如果没有选中则返回第一个商品
     return products[0];
 }
@@ -473,9 +455,11 @@ function getAllItems() {
             }
         }
     });
-    
+
+    items.sort((a, b) => a.name.localeCompare(b.name));
     return items;
 }
+
 
 // 关闭购物车模态框
 function closeCartModal() {
@@ -502,18 +486,22 @@ function closePackageModal() {
 function handlePackageSelect() {
     const selectedPackage = document.querySelector('input[name="package"]:checked');
     if (selectedPackage) {
-        if (selectedPackage.value === 'classic-lite') {
-            products = copyArrayWithMap(products3);
-            document.getElementById('combo').textContent = '山姆对对碰（经典体验版）';
-        } else if (selectedPackage.value === 'deluxe-lite') {
-            products = copyArrayWithMap(products4);
-            document.getElementById('combo').textContent = '山姆对对碰（豪华体验版）';
-        } else if (selectedPackage.value === 'classic') {
+        if (selectedPackage.value === 'p1') {
             products = copyArrayWithMap(products1);
-            document.getElementById('combo').textContent = '山姆对对碰（经典版）';
-        } else if (selectedPackage.value === 'deluxe') {
+            const label = document.querySelector('label[for="p1"]');
+            document.getElementById('combo').textContent = label.textContent;
+        } else if (selectedPackage.value === 'p2') {
             products = copyArrayWithMap(products2);
-            document.getElementById('combo').textContent = '山姆对对碰（豪华版）';
+            const label = document.querySelector('label[for="p2"]');
+            document.getElementById('combo').textContent = label.textContent;
+        } else if (selectedPackage.value === 'p3') {
+            products = copyArrayWithMap(products3);
+            const label = document.querySelector('label[for="p3"]');
+            document.getElementById('combo').textContent = label.textContent;
+        } else if (selectedPackage.value === 'p4') {
+            products = copyArrayWithMap(products4);
+            const label = document.querySelector('label[for="p4"]');
+            document.getElementById('combo').textContent = label.textContent;
         }
         closePackageModal();
     }

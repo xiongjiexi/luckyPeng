@@ -93,6 +93,59 @@
             background-color: #45a049;
         }
     </style>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            height: 80%;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        #comboTable, #comboDetailTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        #comboTable th, #comboTable td,
+        #comboDetailTable th, #comboDetailTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        #comboTable tbody tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+    </style>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -146,6 +199,7 @@
     <!-- 添加新的内容 -->
     <div class="container">
         <button class="refresh-btn" onclick="fetchOrders(this)">刷新订单列表</button>
+        <button onclick="showComboList()">套餐</button>
         <table id="ordersTable">
             <thead>
                 <tr>
@@ -164,6 +218,40 @@
             <tbody id="ordersTableBody">
             </tbody>
         </table>
+    </div>
+
+    <!-- 套餐列表弹窗 -->
+    <div id="comboListModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeComboList()">&times;</span>
+            <h2>套餐列表</h2>
+            <table id="comboTable">
+                <thead>
+                    <tr>
+                        <th>套餐名</th>
+                    </tr>
+                </thead>
+                <tbody id="comboTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 套餐详情弹窗 -->
+    <div id="comboDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeComboDetail()">&times;</span>
+            <h2>套餐详情</h2>
+            <table id="comboDetailTable">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>价格</th>
+                        <th>重量(g)</th>
+                    </tr>
+                </thead>
+                <tbody id="comboDetailTableBody"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -237,7 +325,72 @@
             console.log('定时刷新fetchOrders');
             const refreshBtn = document.querySelector('.refresh-btn');
             fetchOrders(refreshBtn);
-        }, 1000 * 10);
+        }, 3000 * 10);
+    </script>
+
+    <script>
+        function showComboList() {
+            document.getElementById('comboListModal').style.display = 'block';
+            fetchComboList();
+        }
+
+        function closeComboList() {
+            document.getElementById('comboListModal').style.display = 'none';
+        }
+
+        function closeComboDetail() {
+            document.getElementById('comboDetailModal').style.display = 'none';
+        }
+
+        async function fetchComboList() {
+            try {
+                const response = await fetch('/api/combo');
+                const data = await response.json();
+                const tbody = document.getElementById('comboTableBody');
+                tbody.innerHTML = '';
+                
+                data.forEach(combo => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${combo.name}</td>`;
+                    row.onclick = () => showComboDetail(combo.id);
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('获取套餐列表失败:', error);
+            }
+        }
+
+        async function showComboDetail(comboId) {
+            document.getElementById('comboDetailModal').style.display = 'block';
+            try {
+                const response = await fetch(`/api/combo_detail?combo_id=${comboId}`);
+                const data = await response.json();
+                const tbody = document.getElementById('comboDetailTableBody');
+                tbody.innerHTML = '';
+                
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td>${item.weight}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('获取套餐详情失败:', error);
+            }
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('comboListModal')) {
+                closeComboList();
+            }
+            if (event.target == document.getElementById('comboDetailModal')) {
+                closeComboDetail();
+            }
+        }
     </script>
 </body>
 
