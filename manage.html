@@ -199,7 +199,12 @@
     <!-- 添加新的内容 -->
     <div class="container">
         <button class="refresh-btn" onclick="fetchOrders(this)">刷新订单列表</button>
-        <button onclick="showComboList()">套餐</button>
+        <button class="refresh-btn" onclick="fetchPickOrders(this)">获取拣货单列表</button>
+        <!-- 获取账单 -->
+        <button class="refresh-btn" onclick="fetchBill(this)">获取账单</button>
+        <!-- 添加一个时间选择器，能精确到秒，默认是当前时间 -->
+        <input type="datetime-local" id="timePicker" value="">
+        <!-- <button onclick="showComboList()">套餐</button> -->
         <table id="ordersTable">
             <thead>
                 <tr>
@@ -278,9 +283,6 @@
                 } catch(err) {
                     console.error(err);
                 } finally {
-
-
-
                     btn.textContent = originalText;
                     btn.disabled = false;
                     btn.style.backgroundColor = '#4CAF50';
@@ -321,11 +323,11 @@
 
     <script>
         // 定时刷新fetchOrders
-        setInterval(() => {
-            console.log('定时刷新fetchOrders');
-            const refreshBtn = document.querySelector('.refresh-btn');
-            fetchOrders(refreshBtn);
-        }, 3000 * 10);
+        // setInterval(() => {
+        //     console.log('定时刷新fetchOrders');
+        //     const refreshBtn = document.querySelector('.refresh-btn');
+        //     fetchOrders(refreshBtn);
+        // }, 3000 * 10);
     </script>
 
     <script>
@@ -389,6 +391,59 @@
             }
             if (event.target == document.getElementById('comboDetailModal')) {
                 closeComboDetail();
+            }
+        }
+
+        // 获取当前日期和时间
+        var now = new Date();
+        // 格式化为 YYYY-MM-DDTHH:MM:SS 的格式
+        var formattedDate = now.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'}).replace(/\//g, '-');
+        // 设置 input 的 value
+        document.getElementById('timePicker').value = formattedDate;
+
+        async function fetchPickOrders(btn) {
+            // 获取时间选择器的值
+            const time = document.getElementById('timePicker').value;
+            const originalText = btn.textContent;
+            btn.textContent = '正在获取...';
+            btn.disabled = true;
+            btn.style.backgroundColor = '#ccc';
+
+            try {
+                const response = await fetch(`/api/picking_order?time=${time}`);
+                const data = await response.json();
+                // 将data中的对象，换行输出成字符串
+                const result = Object.entries(data).map(([name, quantity]) => `${name}: ${quantity}`).join('\n');
+                // 将result通过能复制的弹窗显示出来
+                prompt("请复制拣货单:", result);
+            } catch (error) {
+                console.error('获取拣货单失败:', error);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                btn.style.backgroundColor = '#4CAF50';
+            }
+        }
+
+        async function fetchBill(btn) {
+            const time = document.getElementById('timePicker').value;
+            const originalText = btn.textContent;
+            btn.textContent = '正在获取...';
+            btn.disabled = true;
+            btn.style.backgroundColor = '#ccc';
+            try {
+                const response = await fetch('/api/bill?time=' + time);
+                const data = await response.json();
+                // 将data中的对象，换行输出成字符串
+                const result = data.map(item => `${item.combo}: ${item.amount} 元, ${item.count} 单`).join('\n');
+                // 将result通过能复制的弹窗显示出来
+                prompt("请复制账单:", result);
+            } catch (error) {
+                console.error('获取账单失败:', error);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                btn.style.backgroundColor = '#4CAF50';
             }
         }
     </script>

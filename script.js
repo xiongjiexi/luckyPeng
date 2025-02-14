@@ -15,7 +15,7 @@ const products1 = [
     { name: 'MM黑金芝士薄脆饼干', price: 0.568, weight: 3},
     { name: 'MM海盐苏打饼干', price: 0.667, weight: 3},
     { name: 'MM牛肉馅酥脆饼干', price: 0.750, weight: 3},
-    { name: '北田谷物坚果香脆卷鹰嘴豆蛋皇口味', price: 0.882, weight: 3},
+    { name: '北田谷物坚果香脆卷', price: 0.882, weight: 3},
     { name: 'MM芝士夹心饼干', price: 0.893, weight: 3},
     { name: 'Tafe黑松露火腿苏打饼干', price: 1.000, weight: 2},
     { name: 'Tafe千层酥', price: 1.029, weight: 2},
@@ -31,12 +31,16 @@ const products2 = [
     { name: 'Bouchard什锦巧克力', price: 0.786, weight: 3},
     { name: '德芙茶萃黑巧', price: 1.250, weight: 3},
     { name: 'MM脆米黑巧', price: 1.429, weight: 3},
-    { name: '雀巢半糖威化', price: 2.051, weight: 2},
-    { name: '吉百利欢聚装巧克力', price: 2.273, weight: 2},
-    { name: 'MM太妃巧克力', price: 2.632, weight: 2},
-    { name: '口福莱巧克力', price: 2.778, weight: 1},
-    { name: '费列罗榛果威化巧克力', price: 2.857, weight: 1},
-    { name: '奇巧熊造型巧克力', price: 3.214, weight: 1}
+    { name: '赛梦小熊棉花糖巧克力', price: 2.000, weight: 3},
+    { name: '雀巢半糖威化', price: 2.051, weight: 3},
+    { name: '吉百利巧克力', price: 2.273, weight: 3},
+    { name: 'MM太妃巧克力', price: 2.632, weight: 3},
+    { name: '口福莱榛子黑巧克力', price: 2.778, weight: 3},
+    { name: '费列罗榛果威化巧克力', price: 2.857, weight: 3},
+    { name: '奇巧熊造型巧克力', price: 3.214, weight: 2},
+    { name: '费列罗榛果威化巧克力（黑巧）', price: 3.333, weight: 2},
+    { name: '健达快乐河马', price: 3.900, weight: 2},
+    { name: '歌帝梵臻萃巧克力', price: 4.929, weight: 1},
 ];
 
 const products3 = [
@@ -50,13 +54,13 @@ const products3 = [
     { name: '小胡鸭柠檬酸辣去骨凤爪', price: 3.591, weight: 2 },
     { name: 'MM猪肉脯', price: 4.045, weight: 1 },
     { name: 'MM香辣鸭舌', price: 4.667, weight: 1 },
-    { name: 'MM风干牛肉', price: 4.807, weight: 1 }
+    { name: 'MM风干牛肉', price: 4.807, weight: 1 },
+    { name: '世棒午餐肉', price: 6.000, weight: 1 },
 ];
 
 const products4 = [
-    { name: 'MM冻干芒果腰果仁', price: 0.833, weight: 3 },
-    { name: 'DGI低GI五黑坚果脆', price: 0.930, weight: 3 },
     { name: 'HRYOUP苹果干', price: 1.629, weight: 3 },
+    { name: '甘源黑金蒜香菜味翡翠豆', price: 1.730, weight: 3 },
     { name: 'MM有机果汁蓝莓干', price: 2.000, weight: 2 },
     { name: '都乐一颗小橘干', price: 2.632, weight: 2 },
     { name: 'ONICE去衣扁桃仁', price: 2.670, weight: 2 },
@@ -67,6 +71,33 @@ const products4 = [
     { name: 'HRYOUP秋月梨干', price: 4.286, weight: 1 },
     { name: '意式火腿风味坚果仁', price: 4.500, weight: 1 },
     { name: 'MM芥末夏威夷果', price: 5.000, weight: 1 }
+];
+
+// 将下面的商品添加到products5中，商品名对应name，价格对应price，权重对应weight默认为1
+const products5 = [
+    { name: 'MM牛初乳奶片', price: 0.233, weight: 2 },
+    { name: '智利无核西梅', price: 0.570, weight: 3 },
+    { name: '雀巢趣满果0糖爆浆软糖', price: 0.600, weight: 3 },
+    { name: 'MM乳酸菌蒟蒻果冻', price: 0.600, weight: 3 },
+    { name: '贝欧宝活性益生菌软糖（无糖）', price: 0.631, weight: 3 },
+    { name: 'MM无糖黑芝麻酥', price: 0.670, weight: 2 },
+    { name: '溜溜梅皇梅', price: 0.714, weight: 2 },
+    { name: '悠哈特浓软奶糖', price: 0.729, weight: 2 },
+    { name: '奥赛vc多酚山楂条', price: 0.758, weight: 2 },
+    { name: 'MM冻干芒果腰果仁', price: 0.833, weight: 2 },
+    { name: 'DGI低GI五黑坚果脆', price: 0.930, weight: 1 },
+    { name: 'MM扁桃仁牛轧糖', price: 1.048, weight: 1 },
+    { name: '奥赛山楂棒', price: 1.064, weight: 1 },
+];
+
+const products6 = [
+    { name: 'MM黄油华夫饼', price: 1.563, weight: 3 },
+    { name: 'Tafe豆乳夹心面包', price: 2.000, weight: 2 },
+    { name: 'MM岩烧芝士华夫饼', price: 2.000, weight: 2 },
+    { name: 'MM三重芝士半蒸蛋糕', price: 2.174, weight: 2 },
+    { name: 'CITY BAKER燕麦曲奇', price: 2.778, weight: 2 },
+    { name: 'MM低糖蛋黄酥', price: 3.583, weight: 1 },
+    { name: '回未开心果海苔肉松卷', price: 3.750, weight: 1 }
 ];
 
 // 默认使用豪华版
@@ -305,7 +336,7 @@ function closeModal() {
 function handleConfirm() {
     playSound('start');
     clearPicked();
-    luckValue = 9;
+    luckValue = drawCount;
     updateLuckValue();
     resetCart();
     setAllWhiteCell();
@@ -420,7 +451,7 @@ function showCartModal() {
     });
 
     // 显示总价
-    document.querySelector('.cart-total').textContent = `欧王清单（${totalCount}件）`;
+    document.querySelector('.cart-total').textContent = `欧皇清单（${totalCount}包）`;
     cartModal.style.display = 'block';
 }
 
@@ -482,27 +513,46 @@ function closePackageModal() {
     document.getElementById('packageModal').style.display = 'none';
 }
 
+// 定义全局变量
+let drawCount = 6;
+
 // 选择套餐
 function handlePackageSelect() {
+    // 设置抽卡数量
+    drawCount = document.querySelector('input[name="drawCount"]:checked').value;
+    // 获取抽卡数的label
+    const drawCountLabel = " " + document.querySelector(`label[for="draw${drawCount}"]`).textContent;
     const selectedPackage = document.querySelector('input[name="package"]:checked');
     if (selectedPackage) {
+
         if (selectedPackage.value === 'p1') {
             products = copyArrayWithMap(products1);
             const label = document.querySelector('label[for="p1"]');
-            document.getElementById('combo').textContent = label.textContent;
+            document.getElementById('combo').textContent = label.textContent + drawCountLabel;
         } else if (selectedPackage.value === 'p2') {
             products = copyArrayWithMap(products2);
             const label = document.querySelector('label[for="p2"]');
-            document.getElementById('combo').textContent = label.textContent;
+            document.getElementById('combo').textContent = label.textContent + drawCountLabel;
         } else if (selectedPackage.value === 'p3') {
             products = copyArrayWithMap(products3);
             const label = document.querySelector('label[for="p3"]');
-            document.getElementById('combo').textContent = label.textContent;
+            document.getElementById('combo').textContent = label.textContent + drawCountLabel;
         } else if (selectedPackage.value === 'p4') {
             products = copyArrayWithMap(products4);
             const label = document.querySelector('label[for="p4"]');
-            document.getElementById('combo').textContent = label.textContent;
+            document.getElementById('combo').textContent = label.textContent + drawCountLabel;
+        } else if (selectedPackage.value === 'p5') {
+            products = copyArrayWithMap(products5);
+            const label = document.querySelector('label[for="p5"]');
+            document.getElementById('combo').textContent = label.textContent + drawCountLabel;
+        } else if (selectedPackage.value === 'p6') {
+            products = copyArrayWithMap(products6);
+            const label = document.querySelector('label[for="p6"]');
+            document.getElementById('combo').textContent = label.textContent + drawCountLabel;
         }
+
+        
+
         closePackageModal();
     }
 }
@@ -519,4 +569,76 @@ function setAllWhiteCell() {
     document.querySelectorAll('.grid-item').forEach(cell => {
         setWhiteCell(cell);
     });
+}
+
+
+// 测试方法
+function testProductSelection(rounds, timesPerRound, select) {
+    const results = [];
+    
+    for (let i = 0; i < rounds; i++) {
+        // 重置购物车和已选商品
+        resetCart();
+        clearPicked();
+        switch(select) {
+            case '1':
+                products = copyArrayWithMap(products1);
+                break;
+            case '2':
+                products = copyArrayWithMap(products2);
+                break;
+            case '3':
+                products = copyArrayWithMap(products3);
+                break;
+            case '4':
+                products = copyArrayWithMap(products4);
+                break;
+            case '5':
+                products = copyArrayWithMap(products5);
+                break;
+            case '6':
+                products = copyArrayWithMap(products6);
+                break;
+            default:
+                products = copyArrayWithMap(products1);
+        }
+        
+        // 每轮执行m次选择
+        for (let j = 0; j < timesPerRound; j++) {
+            const selectedProduct = selectProductByDynamicWeight();
+            addToCart(selectedProduct.name, 1);
+        }
+        
+        // 获取该轮的所有商品
+        const items = getAllItems();
+        const roundTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        
+        // 记录本轮结果
+        results.push({
+            round: i + 1,
+            items: items,
+            totalPrice: roundTotal.toFixed(2),
+            itemCount: items.length
+        });
+    }
+    
+    // 计算统计数据
+    const avgPrice = (results.reduce((sum, r) => sum + parseFloat(r.totalPrice), 0) / rounds).toFixed(2);
+    const avgItemCount = (results.reduce((sum, r) => sum + r.itemCount, 0) / rounds).toFixed(1);
+    
+    // 输出测试结果
+    console.log(`测试结果 (${rounds}轮, 每轮${timesPerRound}次):`);
+    console.log('------------------------');
+    console.log(`平均总价: ${avgPrice}`);
+    console.log(`平均商品种类数: ${avgItemCount}`);
+    console.log('------------------------');
+    console.log('详细轮次数据:', results);
+    
+    return {
+        results: results,
+        summary: {
+            avgPrice: avgPrice,
+            avgItemCount: avgItemCount
+        }
+    };
 }

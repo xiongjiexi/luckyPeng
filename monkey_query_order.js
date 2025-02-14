@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         实时查xhs订单数据
-// @namespace    http://tampermonkey.net/
+// @name         实时查下单数据
+// @namespace    www.xiongjiexi.cn
 // @version      0.1
-// @description  循环点击指定网页中的列表查询按钮，实时查询订单数据
+// @description  循环点击指定网页中的列表查询按钮，实时查询下单数据
 // @author       You
 // @match        https://ark.xiaohongshu.com/app-order/order/query
 // @match        https://ark.xiaohongshu.com/app-order/order/*
@@ -24,18 +24,6 @@
         no: 4,
         controlBtnPosition: {    // 控制按钮位置
             top: '10px',
-            right: '340px'
-        }
-    };
-
-    // 配置参数（按需修改）
-    const config2 = {
-        interval: 15000, // 点击间隔时间（毫秒）
-        maxClicks: 9999, // 最大点击次数（0表示无限）
-        buttonSelector: '.d-button', // 按钮CSS选择器
-        no: 4,
-        controlBtnPosition: {    // 控制按钮位置
-            top: '10px',
             right: '500px'
         }
     };
@@ -44,11 +32,7 @@
     let isRunning = false;      // 默认暂停状态
     let timerId = null;
 
-    // 运行状态
-    let isRunning2 = false;      // 默认暂停状态
-    let timerId2 = null;
-
-    // 创建控制按钮和遮罩层
+    // 创建控制按钮
     function createControlButton() {
         // 创建遮罩层
         const overlay = document.createElement('div');
@@ -68,7 +52,7 @@
 
         const btn = document.createElement('button');
         btn.id = 'autoClickToggle';
-        btn.textContent = '▶ 查退单';
+        btn.textContent = '▶ 查下单';
         btn.style.cssText = `
             position: fixed;
             top: ${config.controlBtnPosition.top};
@@ -83,56 +67,16 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             transition: 0.3s;
         `;
-        
-        btn.addEventListener('click', toggleTask);
-        document.body.appendChild(btn);
-    }
-
-    // 创建控制按钮
-    function createControlButton2() {
-        // 创建遮罩层
-        const overlay = document.createElement('div');
-        overlay.id = 'clickBlockOverlay2';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 9998;
-            display: none;
-            cursor: not-allowed;
-        `;
-        document.body.appendChild(overlay);
-
-        const btn = document.createElement('button');
-        btn.id = 'autoClickToggle2';
-        btn.textContent = '▶ 查下单';
-        btn.style.cssText = `
-            position: fixed;
-            top: ${config2.controlBtnPosition.top};
-            right: ${config2.controlBtnPosition.right};
-            z-index: 9999;
-            padding: 10px 15px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: 0.3s;
-        `;
 
         // 点击事件处理
-        btn.addEventListener('click', toggleTask2);
+        btn.addEventListener('click', toggleTask);
         document.body.appendChild(btn);
     }
 
     // 任务切换函数
     function toggleTask() {
         isRunning = !isRunning;
-        this.textContent = isRunning ? '⏸ 查退单' : '▶ 查退单';
+        this.textContent = isRunning ? '⏸ 查下单' : '▶ 查下单';
         this.style.background = isRunning ? '#f44336' : '#4CAF50';
 
         // 控制遮罩层显示/隐藏
@@ -145,25 +89,6 @@
             clickButtons();
         } else {
             stopTask();
-        }
-    }
-
-    // 任务切换函数
-    function toggleTask2() {
-        isRunning2 = !isRunning2;
-        this.textContent = isRunning2 ? '⏸ 查下单' : '▶ 查下单';
-        this.style.background = isRunning2 ? '#f44336' : '#4CAF50';
-
-        // 控制遮罩层显示/隐藏
-        const overlay = document.getElementById('clickBlockOverlay2');
-        overlay.style.display = isRunning2 ? 'block' : 'none';
-
-        if (isRunning2) {
-            startTask2();
-            // 立即执行一次
-            clickButtons2();
-        } else {
-            stopTask2();
         }
     }
 
@@ -183,33 +108,12 @@
         clearInterval(timerId);
         timerId = null;
         isRunning = false;
-        document.getElementById('autoClickToggle').textContent = '▶ 查退单';
+        document.getElementById('autoClickToggle').textContent = '▶ 查下单';
     }
 
-    // 启动任务
-    function startTask2() {
-        timerId2 = setInterval(() => {
-            if (clickCount2 >= config2.maxClicks && config2.maxClicks !== 0) {
-                stopTask2();
-                return;
-            }
-            clickButtons2();
-        }, config2.interval);
-    }
-
-    // 停止任务
-    function stopTask2() {
-        clearInterval(timerId2);
-        timerId2 = null;
-        isRunning2 = false;
-        document.getElementById('autoClickToggle2').textContent = '▶ 查下单';
-    }
 
     let clickCount = 0;
     let clickInterval;
-
-    let clickCount2 = 0;
-    let clickInterval2;
 
     function clickButtons() {
         // 获取所有符合条件的按钮
@@ -234,55 +138,16 @@
         }
     }
 
-    function clickButtons2() {
-        // 获取所有符合条件的按钮
-        const button = document.querySelectorAll(config2.buttonSelector)[config2.no];
-
-        if (!button) {
-            console.log('未找到查询按钮');
-            return;
-        }
-
-        // 遍历所有按钮并点击
-        console.log('正在点击按钮');
-        button.click();
-
-        clickCount2++;
-        console.log(`已完成第 ${clickCount2} 次点击`);
-
-        // 检查点击次数限制
-        if (config2.maxClicks > 0 && clickCount2 >= config2.maxClicks) {
-            clearInterval(clickInterval2);
-            console.log('已达到最大点击次数，停止运行');
-        }
-    }
-
     // 初始化函数
     function init() {
         // 添加控制按钮
         createControlButton();
-        createControlButton2();
     }
 
     // 等待页面加载完成后执行
     window.addEventListener('load', function() {
         // 延迟1秒确保所有元素加载完成
         setTimeout(init, 1000);
-
-        setTimeout(() => {
-            ajaxHooker.hook(request => {
-                if (request.url === '/api/edith/fulfillment/order/page') {
-                    request.response = res => {
-                        // 获取响应数据
-                        const responseData = res.response;
-                        // 发送到指定接口
-                        if (isRunning) getOrderCount(responseData);
-                        if (isRunning2) getOrderCount_GM_query_order(responseData);
-                    };
-                }
-        
-            });
-        }, 1000);
     });
 //01VDGUE0:a406f325-195f-459d-8de9-e52239cbfca7
 const PUBLIC_KEY = '01VDGUE0';
@@ -311,86 +176,17 @@ function getCurrentTime() {
 
 }
 
+    // ajaxHooker.hook(request => {
+    //     if (request.url === '/api/edith/fulfillment/order/page') {
+    //         request.response = res => {
+    //             // 获取响应数据
+    //             const responseData = res.response;
+    //             // 发送到指定接口
+    //             getOrderCount_GM_query_order(responseData);
+    //         };
+    //     }
 
-    function getOrderCount(pageResponseData) {
-        // 获取页面上的订单总数
-        const pageData = JSON.parse(pageResponseData).data;
-        const pageTotal = pageData.total;
-        console.log('页面总数:', pageTotal);
-
-        console.log('开始同步退单');
-        // 获取已存在的退单数据, 将rows转为set
-        const existRowsSet = new Set(getReturnOrder());
-        // 对比pageData中的数据，pageData.packages是一个数组，表示多个订单，将每个订单的packageId与rows数组中的每个order_number对比
-        // 如果pageData.packages中的packageId在rows数组中不存在，则表示该订单需要同步，否则不需要同步
-        for (let i = 0; i < pageData.packages.length; i++) {
-            const packageId = pageData.packages[i].packageId;
-            // 如果statusDesc为已取消，且afterSaleStatusDesc为售后完成，则表示订单是退单
-            if (pageData.packages[i].statusDesc === '已取消' && pageData.packages[i].afterSaleStatusDesc === '售后完成') {
-                // 如果退单的packageId在rowsSet中不存在，则表示该订单需要同步，否则不需要同步
-                if (!existRowsSet.has(packageId)) {
-                    console.log('正在同步退单：' + packageId);
-                    syncReturnOrder(pageData.packages[i]);
-                }
-            }
-        }
-    }
-
-    function getReturnOrder() {
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: 'https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders?order_time=' + getOrderTime(),
-            headers: {
-                'endpoint-type': 'draft',
-                'Authorization': 'Basic ' + btoa(`${PUBLIC_KEY}:${PRIVATE_KEY}`),
-                'Content-Type': 'application/json'
-            },
-            onload: function(response) {
-                console.log('获取退单数据成功');
-                const data = JSON.parse(response.responseText);
-                const rows = data.data.rows;
-                console.log(rows);
-                return rows;
-            },
-            onerror: function(error) {
-                console.error('获取退单数据时出错:', error);
-            }
-
-        });
-    }
-
-
-    function syncReturnOrder(p) {
-        GM_xmlhttpRequest({
-            method: 'POST',
-            url: 'https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders',
-            headers: {
-                'endpoint-type': 'draft',
-                'Authorization': 'Basic ' + btoa(`${PUBLIC_KEY}:${PRIVATE_KEY}`),
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify({
-                amount: p.totalOrderAmount,
-                nickname: p.userInfo.nickName, 
-                order_number: p.packageId,
-                order_time: p.orderedAt,
-                product_name: p.skus[0].displayName,
-                product_specification: p.skus[0].skuSpecification,
-                source: 'xhs',
-                status: 'Cancelled',
-                create_time: getCurrentTime(),
-                name:p.userInfo.name,
-            }),
-            onload: function(response) {
-                console.log('同步退单成功:', p.packageId + ' ' + response.responseText);
-            },
-            onerror: function(error) {
-                console.error('同步退单失败:', error);
-            }
-
-        });
-    }
-
+    // });
 
     function getOrderCount_GM_query_order(pageResponseData) {
         // 获取页面上的订单总数

@@ -35,6 +35,9 @@ class WebSocketClient {
             } else if (message.action === 'printReturnOrder') { 
                 const data = message.content;
                 printReturnOrder(data);
+            } else if (message.action === 'printOrder') {
+                const data = message.content;
+                printOrder(data);
             }
         };
 
@@ -112,9 +115,11 @@ function printCart() {
     // hiprintTemplate.print2([{ text: printContent}], { printer:'Microsoft Print To PDF',title:'打印任务名称' });
 }
 
+// todo 完善打印内容；统计每件商品需要拣货的数据量；
 function getPrintContent() {
     const cartItems = getAllItems();
-    let printContent = "欧皇的包裹\n";
+    let printContent = "🍕🍔🍟欢迎来到千悦零食铺🍿🌭🧀\n";
+    printContent +=  "✨✨✨✨✨恭喜欧皇✨✨✨✨✨\n";
     printContent += "------------------------\n";
     
     let total = 0;
@@ -127,7 +132,7 @@ function getPrintContent() {
     });
     
     printContent += "------------------------\n";
-    printContent += `总计：${totalCount}件`; //${total.toFixed(2)}元，
+    printContent += `总计：${totalCount}包`;
     
     return printContent;
 }
@@ -176,7 +181,34 @@ function stringifyReturnOrder(order) {
     return printContent;
 }
 
-
+function stringifyOrder(order) {
+    // 在第一行添加空白符号
+    let printContent = "🍕🍔🍟欢迎来到千悦零食铺🍿🌭🧀\n";
+    printContent += "✨✨✨✨✨✨✨✨✨✨✨✨✨\n";
+    printContent += `昵称: ${order.nickname}\n`;
+    printContent += `商品名称: ${order.product_name}\n`;
+    printContent += `商品规格: ${order.product_specification}\n`;
+    printContent += `金额: ${order.amount}\n`;
+    printContent += `下单时间: ${order.order_time}\n`;
+    printContent += "✨✨✨✨✨✨✨✨✨✨✨✨✨\n";
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `\n`;
+    printContent += `地址: ${order.province}  ${order.city}  ${order.district}\n`;
+    printContent += `姓名: ${order.name}\n`;
+    printContent += `订单号: ${order.order_number}\n`;
+    // 订单号截取后6位
+    printContent += `${order.order_number.slice(-6)}\n`;
+    return printContent;
+}
 
 function printReturnOrder(data) {
     const contentArray = [];
@@ -200,11 +232,36 @@ function printReturnOrder(data) {
 }
 
 
+function printOrder(data) {
+    const contentArray = [];
+
+    data.data.rows.forEach(order => {
+        printOrderByOrderNumber(order.order_number);
+        contentArray.push(stringifyOrder(order));
+    });
+
+    console.log('1秒后打印退单');
+    function printNext(index) {
+        if (index >= contentArray.length) return;
+        
+        doPrintOrder(contentArray[index]);
+        // 等待2秒后打印下一个
+        setTimeout(() => printNext(index + 1), 2000);
+    }
+
+    // 开始打印第一个
+    printNext(0);
+}
+
+function doPrintOrder(printContent) {
+    console.log('打印下单', printContent);
+    hiprintTemplate.print2({ text: printContent}, { printer:'HPRT N31C',title:'下单' });
+}   
+
 function doPrintReturnOrder(printContent) {
     console.log('打印退单', printContent);
     hiprintTemplate.print2({ text: printContent}, { printer:'HPRT N31C',title:'退单' });
 }
-
 
 // 调用/api/return_order/print，且将ordernumber传入
 function printReturnOrderByOrderNumber(orderNumber) {
@@ -214,4 +271,13 @@ function printReturnOrderByOrderNumber(orderNumber) {
             console.log('退单数据:', data);
         })
         .catch(error => console.error('获取退单数据失败:', error));
+}
+
+function printOrderByOrderNumber(orderNumber) {
+    fetch(`/api/orders/print?order_number=${orderNumber}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('下单数据:', data);
+        })
+        .catch(error => console.error('获取下单数据失败:', error));
 }

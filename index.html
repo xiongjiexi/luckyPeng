@@ -82,7 +82,7 @@
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal()"></button>
-            <h1 id="combo"> ---------------- </h1>
+            <h1 id="combo"></h1>
             <h2>✨ 恭喜欧皇 ✨</h2>
             <h2>✨ 有请下一位欧皇！ ✨</h2>
             <div class="modal-buttons">
@@ -116,25 +116,47 @@
             <h2>选择套餐</h2>
             <div class="package-options">
                 <div class="package-option">
+                    <input type="radio" id="p5" name="package" value="p5">
+                    <label for="p5">糖果对对碰</label>
+                </div>
+                <div class="package-option">
                     <input type="radio" id="p1" name="package" value="p1">
-                    <label for="p1">山姆对对碰（饼干）</label>
+                    <label for="p1">饼干对对碰</label>
                 </div>
                 <div class="package-option">
                     <input type="radio" id="p2" name="package" value="p2">
-                    <label for="p2">山姆对对碰（巧克力）</label>
+                    <label for="p2">巧克力对对碰</label>
                 </div>
 
                 <div class="package-option">
                     <input type="radio" id="p3" name="package" value="p3">
-                    <label for="p3">山姆对对碰（肉肉）</label>
+                    <label for="p3">肉肉对对碰</label>
                 </div>
 
                 <div class="package-option">
                     <input type="radio" id="p4" name="package" value="p4">
-                    <label for="p4">山姆对对碰（果干坚果）</label>
+                    <label for="p4">果干坚果对对碰</label>
+                </div>
+
+                <div class="package-option">
+                    <input type="radio" id="p6" name="package" value="p6">
+                    <label for="p6">糕点对对碰</label>
                 </div>
             </div>
-
+            <div class="draw-options">
+                <h3>抽卡数</h3>
+                <div class="draw-options-container">
+                    <div class="draw-option">
+                        <input type="radio" id="draw6" name="drawCount" value="6" checked>
+                        <label for="draw6">抽6</label>
+                    </div>
+                    <div class="draw-option">
+                        <input type="radio" id="draw11" name="drawCount" value="11">
+                        <label for="draw11">抽11</label>
+                    </div>
+                </div>
+            </div>
+            
             <div class="modal-buttons">
                 <button class="modal-btn confirm-btn" onclick="handlePackageSelect()">确定</button>
                 <button class="modal-btn cancel-btn" onclick="closePackageModal()">取消</button>

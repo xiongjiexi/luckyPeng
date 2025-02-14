@@ -471,3 +471,29 @@ body, html {
     content: "×";
     font-weight: bold;
 }
+
+.draw-options {
+    margin-top: 5px;
+}
+
+.draw-options h3 {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.draw-option {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.draw-option input[type="radio"] {
+    margin-right: 8px;
+}
+
+.draw-options-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+

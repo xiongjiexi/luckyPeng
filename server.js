@@ -53,7 +53,7 @@ wss.on('connection', (ws, request) => {
         try {
             const data = JSON.parse(message);
             if (data.action === 'saveToFeishu') {
-                saveToFeishuTable(data.content, data.combo);
+                saveData(data.content, data.combo);
             }
         } catch (error) {
             console.error('处理消息时出错:', error);
@@ -95,8 +95,8 @@ function logClientConnection(ws, action) {
 
 
 // 调用飞书 API 将数据存入多维表格
-function saveToFeishuTable(info, combo) {
-    const { totalPrice, totalCount } = info.reduce((acc, item) => {
+function saveData(data, combo) {
+    const { totalPrice, totalCount } = data.reduce((acc, item) => {
         acc.totalPrice += item.price * item.quantity;
         acc.totalCount += item.quantity;
         return acc;
@@ -114,7 +114,7 @@ function saveToFeishuTable(info, combo) {
             },
             data: {
                 fields: {
-                    "info": JSON.stringify(info),
+                    "info": JSON.stringify(data),
                     "total": totalPrice,
                     "count": totalCount,
                     "combo": combo
@@ -130,21 +130,70 @@ function saveToFeishuTable(info, combo) {
             console.error('没有响应数据或响应为空');
         }
     });
+
+    // 将data保存到数据库
+    saveDataToDB(data, totalPrice, totalCount, combo);
+}
+
+async function saveDataToDB(data, totalPrice, totalCount, combo) {
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.query('INSERT INTO picking_order (combo, content, amount, count, create_time) VALUES (?, ?, ?, ?, ?)', [combo, JSON.stringify(data), totalPrice, totalCount, new Date().toLocaleString()]);
+        connection.release();
+        console.log("保存数据成功", rows);
+    } catch (error) {
+        console.error('保存数据失败:', error);
+    }
 }
 
 // 定时获取退单数据，然后调用ws，将退单数据发送到前端，每10秒获取一次
 setInterval(() => {
     getReturnOrder4Cancel();
-}, 1500 * 10);
+}, 20 * 1000);
+
+
+setInterval(() => {
+    getOrder();
+}, 5 * 1000);
 
 
 async function getReturnOrder4Cancel() {
-    const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders_cancel', {
+    try {
+        const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/return_orders_cancel', {
             method: 'GET',
             headers: {
                 'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'),
                 'endpoint-type': 'draft'
             }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("定时获取退单数据, 有%d条退单数据", data.data.rows.length);
+
+        // 将data发送到ws
+        clients4Manage.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ action: 'printReturnOrder', content: data }));
+            }
+        });
+    } catch (error) {
+        console.error('获取退单数据失败:', error);
+    }
+}
+
+
+async function getOrder() {
+    try {
+        const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/orders/unprint', {
+            method: 'GET',
+            headers: {
+            'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'), 
+            'endpoint-type': 'draft'
+        }
     });
 
     if (!response.ok) {
@@ -152,16 +201,19 @@ async function getReturnOrder4Cancel() {
     }
 
     const data = await response.json();
-    console.log("定时获取退单数据, 有%d条退单数据", data.data.rows.length);
+    console.log("定时获取下单数据, 有%d条下单数据", data.data.rows.length);
 
     // 将data发送到ws
     clients4Manage.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ action: 'printReturnOrder', content: data }));
+            client.send(JSON.stringify({ action: 'printOrder', content: data }));
         }
     });
-}
 
+    } catch (error) {
+        console.error('获取下单数据失败:', error);
+    }
+}
 
 const app = express();
 
@@ -242,6 +294,36 @@ app.get('/api/return_order/print', async (req, res) => {
     }
 });
 
+app.get('/api/orders/print', async (req, res) => {   
+    try {
+        // 接口传参order_number
+        const order_number = req.query.order_number;
+        console.log('修改下单状态为Print', order_number);
+        
+        const response = await fetch('https://ap-southeast-1.data.tidbcloud.com/api/v1beta/app/dataapp-GlpQgLxA/endpoint/orders/print', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(`${PUBLIC_KEY}:${PRIVATE_KEY}`).toString('base64'),
+                'endpoint-type': 'draft',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                order_number: order_number
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('获取订单数据失败:', error);
+        res.status(500).json({ error: '获取订单数据失败' });
+    }
+});
+
 // 创建数据库连接配置
 const dbConfig = {
   host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
@@ -249,6 +331,11 @@ const dbConfig = {
   user: '3dK6oXsgVJ4oPyt.root',
   password: 'SWUTVxvVKRkql5Jb',
   database: 'ddp',
+  waitForConnections: true,
+  connectionLimit: 4, // 根据负载调整
+  queueLimit: 0,
+  idleTimeout: 60000, // 空闲连接60秒后释放
+  enableKeepAlive: true,
   ssl: {
     ca: fs.readFileSync(path.join(__dirname, 'isrgrootx1.pem')),
     minVersion: 'TLSv1.2',
@@ -257,7 +344,12 @@ const dbConfig = {
 };
 
 // 创建数据库连接池
-const pool = mysql.createPool(dbConfig);
+// 不要断开链接，不要断开链接，不要断开链接
+const pool = mysql.createPool({
+    ...dbConfig,
+    enableKeepAlive: true, // 启用 Keep-Alive
+    keepAliveInitialDelay: 0, // 立即开始发送 Ping
+  });
 
 // 添加新的API端点用于获取MySQL数据
 app.get('/api/combo', async (req, res) => {
@@ -304,3 +396,39 @@ app.put('/api/combo_detail', async (req, res) => {
     }
 });
 
+app.get('/api/picking_order', async (req, res) => {
+    console.log('获取拣货单', req.query.time);
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.query('SELECT * FROM picking_order where create_time >= ? and data_type = ?', [req.query.time, 'production']);
+        connection.release();
+        // 定义一个data，存储name对应的quantity，遍历每一行的content，然后解析成json，json是一个数组，将每一项的内容是name和quantity，将所有行都按name分组，相同name的quantity相加
+        const data = {};
+        rows.forEach(row => {
+            const content = JSON.parse(row.content);
+            content.forEach(item => {
+                if (!data[item.name]) {
+                    data[item.name] = 0;
+                }
+                data[item.name] += item.quantity;
+            });
+        });
+        res.json(data);
+    } catch (error) {
+        console.error('获取拣货单失败:', error);
+        res.status(500).json({ error: '获取拣货单失败' });
+    }
+});
+
+app.get('/api/bill', async (req, res) => {
+    console.log('获取账单', req.query.time);
+    try {
+        const connection = await pool.getConnection();
+        const [rows] = await connection.query('SELECT combo, sum(amount) amount, count(1) count FROM picking_order where create_time >= ? and data_type = ? group by combo', [req.query.time, 'production']);
+        connection.release();
+        res.json(rows);
+    } catch (error) {
+        console.error('获取账单失败:', error);
+        res.status(500).json({ error: '获取账单失败' });
+    }
+});
