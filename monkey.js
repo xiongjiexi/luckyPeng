@@ -18,7 +18,7 @@
 
     // 配置参数（按需修改）
     const config = {
-        interval: 15000, // 点击间隔时间（毫秒）
+        interval: 15_000, // 点击间隔时间（毫秒）
         maxClicks: 9999, // 最大点击次数（0表示无限）
         buttonSelector: '.d-button', // 按钮CSS选择器
         no: 4,
@@ -30,7 +30,7 @@
 
     // 配置参数（按需修改）
     const config2 = {
-        interval: 15000, // 点击间隔时间（毫秒）
+        interval: 10_000, // 点击间隔时间（毫秒）
         maxClicks: 9999, // 最大点击次数（0表示无限）
         buttonSelector: '.d-button', // 按钮CSS选择器
         no: 4,
